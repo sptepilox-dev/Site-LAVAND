@@ -1,0 +1,33 @@
+# pipeline.yaml (пример спецификации)
+spec:
+  inputs:
+    environment:
+      description: "Целевая среда (dev, staging, prod)"
+      default: "staging"
+    deploy_branch:
+      description: "Ветка репозитория для деплоя"
+      default: "main"
+    site_title:
+      description: "Заголовок сайта"
+      default: "ChatSphere Demo"
+
+steps:
+  - name: Checkout code
+    run: |
+      git clone https://github.com/yourname/yourrepo.git
+      cd yourrepo
+      git checkout $[[ inputs.deploy_branch ]]
+
+  - name: Replace site title
+    run: |
+      # Простейшая подстановка: заменяем плейсхолдер в index.html
+      sed -i 's/{{SITE_TITLE}}/'"$[[ inputs.site_title ]]"'/' index.html
+
+  - name: Build (если нужно)
+    run: |
+      echo "Build step — окружение: $[[ inputs.environment ]]"
+
+  - name: Deploy
+    run: |
+      echo "Deploying branch $[[ inputs.deploy_branch ]] to $[[ inputs.environment ]]"
+      # команды деплоя, зависят от окружения
